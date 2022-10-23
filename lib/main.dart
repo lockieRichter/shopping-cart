@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list/views/menu_view.dart';
-import 'package:shopping_list/views/recipies_view.dart';
+import 'package:shopping_list/views/recipes_view.dart';
 import 'package:shopping_list/views/shopping_list_view.dart';
 
 void main() {
@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         return const ShoppingListView();
       case 2:
-        return const RecipiesView();
+        return const RecipesView();
     }
     return const Text("TODO");
   }
