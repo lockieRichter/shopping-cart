@@ -1,11 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_list/screens/sign_in.dart';
-import 'package:shopping_list/utils/authentication.dart';
+import 'package:shopping_list/services/auth.dart';
 
 class UserInfoScreen extends StatefulWidget {
-  const UserInfoScreen({Key? key, required User user})
-      : _user = user,
+  final Auth auth;
+
+  const UserInfoScreen({
+    Key? key,
+    required User user,
+    required this.auth,
+  })  : _user = user,
         super(key: key);
 
   final User _user;
@@ -20,7 +25,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          const SignInScreen(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = const Offset(-1.0, 0.0);
         var end = Offset.zero;
@@ -140,7 +146,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         setState(() {
                           _isSigningOut = true;
                         });
-                        await Authentication.signOut(context: context);
+                        await widget.auth.signOut(context: context);
                         setState(() {
                           _isSigningOut = false;
                         });

@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_list/screens/user_info.dart';
-import 'package:shopping_list/utils/authentication.dart';
+import 'package:shopping_list/services/auth.dart';
 
 class GoogleSignInButton extends StatefulWidget {
+  final Auth auth;
+
+  const GoogleSignInButton({super.key, required this.auth});
+
   @override
   _GoogleSignInButtonState createState() => _GoogleSignInButtonState();
 }
@@ -34,7 +38,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                 });
 
                 User? user =
-                    await Authentication.signInWithGoogle(context: context);
+                    await widget.auth.signInWithGoogle(context: context);
 
                 setState(() {
                   _isSigningIn = false;
@@ -44,6 +48,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => UserInfoScreen(
+                        auth: widget.auth,
                         user: user,
                       ),
                     ),
