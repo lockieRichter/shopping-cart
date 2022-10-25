@@ -9,12 +9,15 @@ class Auth {
   final GoogleSignIn googleSignIn;
   final FirebaseAuth firebaseAuth;
 
+  final AuthProviderManager authProviderManager;
+
   Auth({
     required this.googleSignIn,
     required this.firebaseAuth,
+    this.authProviderManager = const AuthProviderManager(),
   });
 
-  Future<User?> signInWithGoogle({required BuildContext context}) async {
+  Future<User?> signInWithGoogle() async {
     User? user;
 
     final GoogleSignInAccount? googleSignInAccount =
@@ -24,10 +27,8 @@ class Auth {
       final GoogleSignInAuthentication googleSignInAuthentication =
           await googleSignInAccount.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
+      final AuthCredential credential = authProviderManager
+          .getGoogleAuthCredential(googleSignInAuthentication);
 
       try {
         final UserCredential userCredential =
@@ -36,24 +37,24 @@ class Auth {
         user = userCredential.user;
       } on FirebaseAuthException catch (e) {
         if (e.code == 'account-exists-with-different-credential') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            customSnackBar(
-              content: 'The account already exists with a different credential',
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   customSnackBar(
+          //     content: 'The account already exists with a different credential',
+          //   ),
+          // );
         } else if (e.code == 'invalid-credential') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            customSnackBar(
-              content: 'Error occurred while accessing credentials. Try again.',
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   customSnackBar(
+          //     content: 'Error occurred while accessing credentials. Try again.',
+          //   ),
+          // );
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          customSnackBar(
-            content: 'Error occurred using Google Sign In. Try again.',
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   customSnackBar(
+        //     content: 'Error occurred using Google Sign In. Try again.',
+        //   ),
+        // );
       }
     }
 
@@ -105,5 +106,17 @@ class Auth {
     }
 
     return firebaseApp;
+  }
+}
+
+class AuthProviderManager {
+  const AuthProviderManager();
+
+  AuthCredential getGoogleAuthCredential(
+      GoogleSignInAuthentication authentication) {
+    return GoogleAuthProvider.credential(
+      idToken: authentication.idToken,
+      accessToken: authentication.accessToken,
+    );
   }
 }
